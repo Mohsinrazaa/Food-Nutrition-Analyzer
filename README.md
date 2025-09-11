@@ -1,5 +1,7 @@
 # Food Nutrition Analyzer 🍽️
 
+https://food-nutrition-analyzergit-rhbqqhw75aesdxpqu4osth.streamlit.app/
+
 A Streamlit application that uses OpenAI's GPT-4 Vision model to analyze food images and provide detailed nutritional information.
 
 ## Features
