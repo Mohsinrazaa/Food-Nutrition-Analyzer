@@ -27,18 +27,17 @@ from config import (
     RECOMMENDATION_MODEL
 )
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Initialize OpenAI client
+
 def get_openai_client():
     """Get OpenAI client with proper API key handling"""
     try:
-        # Try to get API key from Streamlit secrets first
+        
         api_key = st.secrets.get("OPENAI_API_KEY")
         if not api_key or api_key == "your-openai-api-key-here":
-            # Fallback to environment variable
+           
             api_key = os.getenv("OPENAI_API_KEY")
         
         if not api_key:
@@ -88,25 +87,25 @@ def analyze_food_image(file_obj):
     If not food, returns 'Not Food' JSON.
     """
     try:
-        # Get OpenAI client
+        
         client = get_openai_client()
         if not client:
             return DEFAULT_UNKNOWN_NUTRITION
         
-        # Process image
+        
         img_bytes = file_obj.read()
         
-        # Convert image to RGB if needed and determine format
+        
         img = Image.open(io.BytesIO(img_bytes))
         if img.mode != 'RGB':
             img = img.convert('RGB')
         
-        # Convert to base64
+        
         buffer = io.BytesIO()
         img.save(buffer, format='JPEG', quality=85)
         img_b64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
         
-        # Make API call
+        
         response = client.chat.completions.create(
             model=OPENAI_MODEL,
             messages=[
@@ -151,23 +150,23 @@ def get_chatbot_response(user_message, chat_history=None, analysis_result=None):
         if not client:
             return "I'm sorry, I'm having trouble connecting to the AI service. Please try again later."
         
-        # Prepare messages for the chat
+        
         messages = [{"role": "system", "content": CHATBOT_SYSTEM_PROMPT}]
         
-        # Add analysis result context if available
+        
         if analysis_result and analysis_result.get("food_name") not in ["Not Food", "Unknown"]:
             context = f"Current food analysis result: {analysis_result['food_name']} with {analysis_result['calories']} calories. Nutritional facts: {analysis_result['nutritional_facts']}"
             messages.append({"role": "assistant", "content": f"I can see you've analyzed {analysis_result['food_name']}. How can I help you with this food or any other nutrition questions?"})
         
-        # Add chat history if available
+        
         if chat_history:
             for message in chat_history[-10:]:  # Keep last 10 messages for context
                 messages.append(message)
         
-        # Add current user message
+        
         messages.append({"role": "user", "content": user_message})
         
-        # Make API call with enhanced model
+        
         response = client.chat.completions.create(
             model=CHAT_MODEL,
             messages=messages,
@@ -204,11 +203,11 @@ def render_chatbot_interface():
         if st.button("🥗 Meal Planning", use_container_width=True):
             st.session_state.quick_question = "Help me create a balanced meal plan for the week with healthy breakfast, lunch, and dinner options."
     
-    # Initialize chat history in session state
+    
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
     
-    # Display chat history
+    
     chat_container = st.container()
     with chat_container:
         for message in st.session_state.chat_history:
@@ -219,31 +218,31 @@ def render_chatbot_interface():
                 with st.chat_message("assistant"):
                     st.write(message["content"])
     
-    # Handle quick questions first
+    
     if 'quick_question' in st.session_state:
         prompt = st.session_state.quick_question
         del st.session_state.quick_question
         
-        # Add user message to chat history
+        
         st.session_state.chat_history.append({"role": "user", "content": prompt})
         
-        # Display user message
+        
         with st.chat_message("user"):
             st.write(prompt)
         
-        # Get enhanced analysis result for context
+        
         analysis_result = st.session_state.get('enhanced_analysis_result', None)
         
-        # Generate and display assistant response
+        
         with st.chat_message("assistant"):
             with st.spinner("🧠 AI Nutritionist is thinking..."):
                 response = get_chatbot_response(prompt, st.session_state.chat_history, analysis_result)
                 st.write(response)
         
-        # Add assistant response to chat history
+        
         st.session_state.chat_history.append({"role": "assistant", "content": response})
     
-    # Regular chat input
+    
     if prompt := st.chat_input("Ask me about nutrition, food, or your analysis results..."):
         # Add user message to chat history
         st.session_state.chat_history.append({"role": "user", "content": prompt})
@@ -252,19 +251,19 @@ def render_chatbot_interface():
         with st.chat_message("user"):
             st.write(prompt)
         
-        # Get enhanced analysis result for context
+        
         analysis_result = st.session_state.get('enhanced_analysis_result', None)
         
-        # Generate and display assistant response
+        
         with st.chat_message("assistant"):
             with st.spinner("🧠 AI Nutritionist is thinking..."):
                 response = get_chatbot_response(prompt, st.session_state.chat_history, analysis_result)
                 st.write(response)
         
-        # Add assistant response to chat history
+        
         st.session_state.chat_history.append({"role": "assistant", "content": response})
     
-    # Chat management buttons
+    
     col1, col2, col3 = st.columns(3)
     
     with col1:
@@ -328,20 +327,16 @@ def analyze_food_image_enhanced(file_obj):
         if not client:
             return DEFAULT_UNKNOWN_NUTRITION
         
-        # Process image
         img_bytes = file_obj.read()
         
-        # Convert image to RGB if needed and determine format
         img = Image.open(io.BytesIO(img_bytes))
         if img.mode != 'RGB':
             img = img.convert('RGB')
         
-        # Convert to base64
         buffer = io.BytesIO()
         img.save(buffer, format='JPEG', quality=85)
         img_b64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
         
-        # Make API call with enhanced model
         response = client.chat.completions.create(
             model=ANALYSIS_MODEL,
             messages=[
@@ -385,7 +380,6 @@ def get_food_recommendations(analysis_result, user_preferences=""):
         if not client:
             return "I'm sorry, I'm having trouble connecting to the AI service. Please try again later."
         
-        # Prepare context
         context = f"Food analyzed: {analysis_result.get('food_name', 'Unknown')} with {analysis_result.get('calories', 0)} calories. "
         context += f"Nutritional facts: {analysis_result.get('nutritional_facts', {})}. "
         context += f"Health score: {analysis_result.get('health_score', 'N/A')}. "
@@ -414,7 +408,6 @@ def render_enhanced_food_analysis_interface():
     Render the enhanced food analysis interface with advanced LLM features.
     """
     
-    # Debug information (only show in development)
     if st.checkbox("Show Debug Info", help="Enable this to see debugging information"):
         st.write("**Debug Information:**")
         try:
@@ -426,14 +419,12 @@ def render_enhanced_food_analysis_interface():
         except Exception as e:
             st.error(f"❌ Error initializing OpenAI client: {e}")
         
-        # Show API key status (masked)
         api_key = st.secrets.get("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
         if api_key and api_key != "your-openai-api-key-here":
             st.success(f"✅ API key found: {api_key[:10]}...{api_key[-4:]}")
         else:
             st.error("❌ API key not found or not configured")
     
-    # Sidebar for image upload
     with st.sidebar:
         st.header("📸 Upload Image")
         uploaded_file = st.file_uploader(
@@ -443,11 +434,9 @@ def render_enhanced_food_analysis_interface():
         )
         
         if uploaded_file is not None:
-            # Display uploaded image
             image = Image.open(uploaded_file)
             st.image(image, caption="Uploaded Image", use_container_width=True)
     
-    # Main content area
     col1, col2 = st.columns([1, 1])
     
     with col1:
@@ -456,22 +445,18 @@ def render_enhanced_food_analysis_interface():
         if uploaded_file is not None:
             with st.spinner("🤖 AI is analyzing your food image..."):
                 try:
-                    # Reset file pointer
                     uploaded_file.seek(0)
                     result = analyze_food_image_enhanced(uploaded_file)
                     
-                    # Store result in session state for use in other columns
                     st.session_state.enhanced_analysis_result = result
                     
-                    # Display results
                     if result["food_name"] == "Not Food":
                         st.warning("⚠️ The uploaded image doesn't appear to contain food.")
                     elif result["food_name"] == "Unknown":
                         st.error("❌ Unable to analyze the image. Please try a clearer image.")
                     else:
                         st.success(f"✅ Successfully analyzed: **{result['food_name']}**")
-                    
-                    # Display enhanced metrics
+
                     col1a, col1b = st.columns(2)
                     with col1a:
                         st.metric("Food Name", result["food_name"])
@@ -495,10 +480,8 @@ def render_enhanced_food_analysis_interface():
         if uploaded_file is not None and hasattr(st.session_state, 'enhanced_analysis_result'):
             result = st.session_state.enhanced_analysis_result
             if result["food_name"] not in ["Not Food", "Unknown"]:
-                # Create a nice display of nutritional facts
                 nutrition = result["nutritional_facts"]
                 
-                # Display nutritional facts in a structured way
                 st.markdown("### Macronutrients")
                 col2a, col2b = st.columns(2)
                 
@@ -515,30 +498,25 @@ def render_enhanced_food_analysis_interface():
                 st.metric("Sodium", nutrition.get("sodium", "N/A"))
                 st.metric("Cholesterol", nutrition.get("cholesterol", "N/A"))
                 
-                # Health benefits
                 if result.get("health_benefits"):
                     st.markdown("### 🌟 Health Benefits")
                     for benefit in result["health_benefits"]:
                         st.write(f"• {benefit}")
                 
-                # Dietary tags
                 if result.get("dietary_tags"):
                     st.markdown("### 🏷️ Dietary Tags")
                     tags = " ".join([f"`{tag}`" for tag in result["dietary_tags"]])
                     st.markdown(tags)
                 
-                # Cooking suggestions
                 if result.get("cooking_suggestions"):
                     st.markdown("### 👨‍🍳 Cooking Tip")
                     st.info(f"💡 {result['cooking_suggestions']}")
                 
-                # Allergen warnings
                 if result.get("allergen_warnings"):
                     st.markdown("### ⚠️ Allergen Warnings")
                     for allergen in result["allergen_warnings"]:
                         st.warning(f"⚠️ Contains: {allergen}")
                 
-                # Additional info
                 st.markdown("### ℹ️ Additional Information")
                 st.info("💡 This enhanced analysis is powered by advanced AI and should be used as a general guide. For precise nutritional information, consult a nutritionist or food database.")
             else:
@@ -546,7 +524,6 @@ def render_enhanced_food_analysis_interface():
         else:
             st.info("Upload an image to see enhanced nutritional facts here!")
     
-    # Footer
     st.markdown("---")
     st.markdown(
         "**Note:** This enhanced analysis uses advanced AI models to provide comprehensive nutritional insights. "
@@ -560,13 +537,11 @@ def render_recommendations_interface():
     st.header("💡 AI-Powered Recommendations")
     st.markdown("Get personalized food recommendations and dietary advice based on your analysis results!")
     
-    # Check if we have analysis results
     if hasattr(st.session_state, 'enhanced_analysis_result'):
         result = st.session_state.enhanced_analysis_result
         if result.get("food_name") not in ["Not Food", "Unknown"]:
             st.success(f"✅ Found analysis results for: **{result['food_name']}**")
             
-            # User preferences input
             st.subheader("🎯 Your Preferences")
             user_preferences = st.text_area(
                 "Tell us about your dietary goals, restrictions, or preferences:",
@@ -574,7 +549,6 @@ def render_recommendations_interface():
                 height=100
             )
             
-            # Generate recommendations button
             if st.button("🤖 Get AI Recommendations", type="primary"):
                 with st.spinner("🧠 AI is generating personalized recommendations..."):
                     recommendations = get_food_recommendations(result, user_preferences)
@@ -585,7 +559,6 @@ def render_recommendations_interface():
     else:
         st.info("👆 Please analyze a food image in the 'Smart Analysis' tab first to get personalized recommendations!")
     
-    # General nutrition tips
     st.markdown("---")
     st.subheader("💡 General Nutrition Tips")
     st.info("""
@@ -605,13 +578,11 @@ def render_health_insights_interface():
     st.header("📊 Health Insights & Analytics")
     st.markdown("Track your nutritional patterns and get insights about your eating habits!")
     
-    # Check if we have analysis results
     if hasattr(st.session_state, 'enhanced_analysis_result'):
         result = st.session_state.enhanced_analysis_result
         if result.get("food_name") not in ["Not Food", "Unknown"]:
             st.success(f"📈 Analyzing insights for: **{result['food_name']}**")
             
-            # Health score visualization
             health_score = result.get("health_score", 0)
             if health_score > 0:
                 st.subheader("🏆 Health Score Analysis")
@@ -631,11 +602,9 @@ def render_health_insights_interface():
                 with col3:
                     st.metric("Improvement Needed", f"{10-health_score} points")
             
-            # Nutritional breakdown
             st.subheader("📊 Nutritional Breakdown")
             nutrition = result.get("nutritional_facts", {})
             
-            # Create a simple nutritional chart
             if nutrition:
                 col1, col2 = st.columns(2)
                 
@@ -659,13 +628,11 @@ def render_health_insights_interface():
                     for nutrient, value in micronutrients.items():
                         st.write(f"• {nutrient}: {value}")
             
-            # Health benefits analysis
             if result.get("health_benefits"):
                 st.subheader("🌟 Health Benefits")
                 for i, benefit in enumerate(result["health_benefits"], 1):
                     st.write(f"{i}. {benefit}")
             
-            # Dietary analysis
             if result.get("dietary_tags"):
                 st.subheader("🏷️ Dietary Profile")
                 tags = result["dietary_tags"]
@@ -676,7 +643,6 @@ def render_health_insights_interface():
     else:
         st.info("👆 Please analyze a food image in the 'Smart Analysis' tab first to see health insights!")
     
-    # General health information
     st.markdown("---")
     st.subheader("📚 Health Education")
     

@@ -2,19 +2,16 @@
 Configuration settings for the Food Nutrition Analyzer app.
 """
 
-# OpenAI Configuration
 OPENAI_MODEL = "gpt-4o-mini"
 OPENAI_TEMPERATURE = 0.2
-
-# Supported image formats
 SUPPORTED_IMAGE_FORMATS = ['png', 'jpg', 'jpeg']
 
-# App Configuration
+
 APP_TITLE = "AI Food Intelligence Hub"
 APP_ICON = "🧠"
 APP_LAYOUT = "wide"
 
-# Default nutritional values for non-food items
+
 DEFAULT_NON_FOOD_NUTRITION = {
     "food_name": "Not Food",
     "calories": 0,
@@ -27,7 +24,7 @@ DEFAULT_NON_FOOD_NUTRITION = {
     }
 }
 
-# Default values for unknown/error cases
+
 DEFAULT_UNKNOWN_NUTRITION = {
     "food_name": "Unknown",
     "calories": 0,
@@ -40,7 +37,7 @@ DEFAULT_UNKNOWN_NUTRITION = {
     }
 }
 
-# Chatbot Configuration
+
 CHATBOT_SYSTEM_PROMPT = """You are a helpful nutrition and food analysis assistant. You can help users with:
 
 1. Food and nutrition questions
@@ -62,7 +59,7 @@ You can reference the food analysis results if they're available in the conversa
 CHATBOT_MAX_TOKENS = 1000
 CHATBOT_TEMPERATURE = 0.7
 
-# Advanced LLM Features
+
 FOOD_RECOMMENDATION_SYSTEM_PROMPT = """You are an advanced AI nutritionist and food recommendation expert. You can:
 
 1. Analyze food images and provide detailed nutritional insights
@@ -99,7 +96,7 @@ FOOD_ANALYSIS_ENHANCED_PROMPT = """You are an advanced AI food analysis system. 
 
 If the image is not food, return the same structure with appropriate "Not Food" values."""
 
-# LLM Model Configuration
-ANALYSIS_MODEL = "gpt-4o"  # More powerful model for analysis
-CHAT_MODEL = "gpt-4o-mini"  # Efficient model for chat
-RECOMMENDATION_MODEL = "gpt-4o"  # Advanced model for recommendations
+
+ANALYSIS_MODEL = "gpt-4o" 
+CHAT_MODEL = "gpt-4o-mini" 
+RECOMMENDATION_MODEL = "gpt-4o" 
