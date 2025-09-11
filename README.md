@@ -1,6 +1,6 @@
 # 🧠 AI Food Intelligence Hub
 
-https://food-nutrition-analyzergit-rhbqqhw75aesdxpqu4osth.streamlit.app/
+https://ai-food-intelligence.streamlit.app/
 
 An advanced AI-powered food analysis platform that combines multiple OpenAI models to provide comprehensive nutritional insights, personalized recommendations, and intelligent health guidance.
 
