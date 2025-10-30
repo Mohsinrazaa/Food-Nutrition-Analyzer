@@ -187,7 +187,6 @@ def render_chatbot_interface():
     st.header("🤖 AI Nutritionist Chat")
     st.markdown("**Chat with our advanced AI nutritionist for expert advice, meal planning, and personalized guidance!**")
     
-    # Quick action buttons
     st.subheader("🚀 Quick Actions")
     col1, col2, col3 = st.columns(3)
     
@@ -244,10 +243,9 @@ def render_chatbot_interface():
     
     
     if prompt := st.chat_input("Ask me about nutrition, food, or your analysis results..."):
-        # Add user message to chat history
+
         st.session_state.chat_history.append({"role": "user", "content": prompt})
-        
-        # Display user message
+     
         with st.chat_message("user"):
             st.write(prompt)
         
@@ -286,7 +284,6 @@ def render_chatbot_interface():
         if st.button("💡 Get Tips", use_container_width=True):
             st.session_state.quick_question = "Give me 5 practical nutrition tips for improving my daily diet and overall health."
     
-    # Show context information
     if hasattr(st.session_state, 'enhanced_analysis_result'):
         result = st.session_state.enhanced_analysis_result
         if result.get("food_name") not in ["Not Food", "Unknown"]:
@@ -302,8 +299,7 @@ def main():
     st.title("🧠 AI Food Intelligence Hub")
     st.markdown("**Advanced AI-powered food analysis, nutrition insights, and personalized recommendations!**")
     st.markdown("Upload food images for comprehensive analysis or chat with our AI nutritionist for expert advice.")
-    
-    # Create tabs for different functionalities
+ 
     tab1, tab2, tab3, tab4 = st.tabs(["📸 Smart Analysis", "🤖 AI Nutritionist", "💡 Recommendations", "📊 Health Insights"])
     
     with tab1:
